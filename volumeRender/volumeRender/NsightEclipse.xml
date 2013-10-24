@@ -36,11 +36,11 @@
     <library os="linux">glut</library>
 
     <!-- Either absolute or relative to sample -->
-    <library-path os="windows" arch="x86_64">../../common/lib/x64</library-path>
-    <library-path os="windows" arch="Win32">../../common/lib/Win32</library-path>
-    <library-path os="linux" arch="x86_64">../../common/lib/linux/x86_64</library-path>
-    <library-path os="linux" arch="i686">../../common/lib/linux/i686</library-path>
-    <library-path os="macosx">../../common/lib/darwin</library-path>
+    <library-path os="windows" arch="x86_64">../common/lib/x64</library-path>
+    <library-path os="windows" arch="Win32">../common/lib/Win32</library-path>
+    <library-path os="linux" arch="x86_64">../common/lib/linux/x86_64</library-path>
+    <library-path os="linux" arch="i686">../common/lib/linux/i686</library-path>
+    <library-path os="macosx">../common/lib/darwin</library-path>
 
     <!-- Either absolute or relative to sample -->
     <include-path>./</include-path>

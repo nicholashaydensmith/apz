@@ -100,7 +100,7 @@ ALL_LDFLAGS += $(EXTRA_NVCCLDFLAGS)
 ALL_LDFLAGS += $(addprefix -Xlinker ,$(EXTRA_LDFLAGS))
 
 # Common includes and paths for CUDA
-INCLUDES  := -I../../common/inc
+INCLUDES  := -I../common/inc
 LIBRARIES :=
 
 ################################################################################
@@ -113,10 +113,10 @@ include ./findgllib.mk
 ifneq ($(DARWIN),)
   # Mac OSX specific libraries and paths to include
   LIBRARIES += -L/System/Library/Frameworks/OpenGL.framework/Libraries 
-  LIBRARIES += -lGL -lGLU ../../common/lib/darwin/libGLEW.a
+  LIBRARIES += -lGL -lGLU ../common/lib/darwin/libGLEW.a
   ALL_LDFLAGS += -Xlinker -framework -Xlinker GLUT
 else
-  LIBRARIES += -L../../common/lib/$(OSLOWER)/$(OS_ARCH) $(GLLINK)
+  LIBRARIES += -L../common/lib/$(OSLOWER)/$(OS_ARCH) $(GLLINK)
   LIBRARIES += -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW
 endif
 
