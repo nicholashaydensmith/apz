@@ -42,6 +42,31 @@ struct Ray
     float3 d;   // direction
 };
 
+////////////////////////////////////////////////////////////
+
+octree root;
+
+typedef struct octree_struct* octree;
+
+struct octree_struct{
+      char fill;
+      octree child[8];
+};
+
+__global__
+void construct_octree(void *vol, 
+
+
+__device__
+float lookup_oc(void *data, float x, float y, float z){
+
+}
+
+
+///////////////////////////////////////////////////////////
+
+
+
 // intersect ray with a box
 // http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
 
@@ -182,8 +207,9 @@ void setTextureFilterMode(bool bLinearFilter)
 }
 
 extern "C"
-void initCuda(void *h_volume, cudaExtent volumeSize)
+void initCuda(void *h_volume, cudaExtent volumeSize, size_t size)
 {
+      /*
     // create 3D array
     cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<VolumeType>();
     checkCudaErrors(cudaMalloc3DArray(&d_volumeArray, &channelDesc, volumeSize));
@@ -204,6 +230,11 @@ void initCuda(void *h_volume, cudaExtent volumeSize)
 
     // bind array to 3D texture
     checkCudaErrors(cudaBindTextureToArray(tex, d_volumeArray, channelDesc));
+    */
+    void *d_volume;
+    checkCudaErrors(cudaMalloc(&d_volume, size));
+    checkCudaErrors(cudaMemcpy(&d_volume, h_volume, size, cudaMemcpyHostToDevice));
+    construct_octree<<<1,1>>>(d_volume);
 
     // create transfer function texture
     float4 transferFunc[] =

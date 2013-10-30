@@ -69,9 +69,13 @@ const char *sReference[] =
 
 const char *sSDKsample = "CUDA 3D Volume Render";
 
-const char *volumeFilename = "dawg.raw";
-cudaExtent volumeSize = make_cudaExtent(32, 32, 32);
-typedef unsigned char VolumeType;
+//const char *volumeFilename = "dawg.raw";
+//cudaExtent volumeSize = make_cudaExtent(32, 32, 32);
+//typedef unsigned char VolumeType;
+
+const char *volumeFilename = "rawed.raw";
+cudaExtent volumeSize = make_cudaExtent(4, 4, 4);
+typedef char VolumeType;
 
 //char *volumeFilename = "mrt16_angio.raw";
 //cudaExtent volumeSize = make_cudaExtent(416, 512, 112);
@@ -540,6 +544,19 @@ void runSingleTest(const char *ref_file, const char *exec_path)
     exit(bTestResult ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
+
+void *load_file(char *path, size_t *size){
+      FILE *f = fopen(path, "r");
+      fseek(f, 0L, SEEK_END);
+      *size = ftell(f);
+      fseek(f, 0L, SEEK_SET);
+      void *data = malloc(size);
+      fread(data,1,size,f);
+      return data;
+}
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Program main
 ////////////////////////////////////////////////////////////////////////////////
@@ -618,10 +635,11 @@ main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    size_t size = volumeSize.width*volumeSize.height*volumeSize.depth*sizeof(VolumeType);
-    void *h_volume = loadRawFile(path, size);
-
-    initCuda(h_volume, volumeSize);
+    //size_t size = volumeSize.width*volumeSize.height*volumeSize.depth*sizeof(VolumeType);
+    //void *h_volume = loadRawFile(path, size);
+    size_t size;
+    void *h_volume = load_file(path, &size);
+    initCuda(h_volume, volumeSize, size);
     free(h_volume);
 
     sdkCreateTimer(&timer);
