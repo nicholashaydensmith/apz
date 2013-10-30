@@ -44,8 +44,6 @@ struct Ray
 
 ////////////////////////////////////////////////////////////
 
-octree root;
-
 typedef struct octree_struct* octree;
 
 struct octree_struct{
@@ -53,8 +51,54 @@ struct octree_struct{
       octree child[8];
 };
 
+typedef struct {
+      void *ptr;
+      size_t size;
+      size_t curr_offset;
+} forgetful;
+
+__device__
+void *phalloc(forgetful *memory, size_t alloc){
+      void *tmp = memory->ptr + memory->curr_offset;
+      memory->curr_offset += alloc;
+      if(memory->curr_offset > memory->size){
+            //Houston we have a problem
+      }
+      return tmp;
+}
+
+__device__
+octree new_node(char fill, forgetful *memory){
+      octree t = (octree)phalloc(memory, sizeof(struct octree_struct));
+      t->fill = fill;
+      t->child[0] = 
+            t->child[1] = 
+            t->child[2] = 
+            t->child[3] = 
+            t->child[4] = 
+            t->child[5] = 
+            t->child[6] = 
+            t->child[7] = NULL;
+      return t; 
+}
+
+__device__
+void parse_root(octree *t, void *vol, forgetful *memory){
+      __shared__ static size_t offset;
+      for(unsigned int i=0;i<8;++i){
+            char fill = (char)*((char *)vol + ((offset++)*sizeof(char)));
+            (*t)->child[i] = new_node(fill, memory);
+            if(fill == 2) parse_root(&(*t)->child[i], vol, memory);
+      }
+}
+
 __global__
-void construct_octree(void *vol, 
+void construct_octree(void *vol, void *mem, size_t memsize){
+      forgetful memory = { mem, memsize, 0 };
+      octree d_root = new_node(2, &memory);
+      parse_root(&d_root, vol, &memory);
+      
+}
 
 
 __device__
@@ -234,7 +278,12 @@ void initCuda(void *h_volume, cudaExtent volumeSize, size_t size)
     void *d_volume;
     checkCudaErrors(cudaMalloc(&d_volume, size));
     checkCudaErrors(cudaMemcpy(&d_volume, h_volume, size, cudaMemcpyHostToDevice));
-    construct_octree<<<1,1>>>(d_volume);
+
+    void *d_mem;
+    size_t d_memsize = size*sizeof(struct octree_struct);
+    checkCudaErrors(cudaMalloc(&d_mem, d_memsize));
+
+    construct_octree<<<1,1>>>(d_volume, d_mem, d_memsize);
 
     // create transfer function texture
     float4 transferFunc[] =
