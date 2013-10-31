@@ -73,7 +73,7 @@ const char *sSDKsample = "CUDA 3D Volume Render";
 //cudaExtent volumeSize = make_cudaExtent(32, 32, 32);
 //typedef unsigned char VolumeType;
 
-const char *volumeFilename = "rawed.raw";
+const char *volumeFilename = "test1.boc";
 cudaExtent volumeSize = make_cudaExtent(4, 4, 4);
 typedef char VolumeType;
 
@@ -116,7 +116,7 @@ char **pArgv;
 #endif
 
 extern "C" void setTextureFilterMode(bool bLinearFilter);
-extern "C" void initCuda(void *h_volume, cudaExtent volumeSize);
+extern "C" void initCuda(void *h_volume, cudaExtent volumeSize, size_t size);
 extern "C" void freeCudaBuffers();
 extern "C" void render_kernel(dim3 gridSize, dim3 blockSize, uint *d_output, uint imageW, uint imageH,
                               float density, float brightness, float transferOffset, float transferScale);
@@ -550,8 +550,8 @@ void *load_file(char *path, size_t *size){
       fseek(f, 0L, SEEK_END);
       *size = ftell(f);
       fseek(f, 0L, SEEK_SET);
-      void *data = malloc(size);
-      fread(data,1,size,f);
+      void *data = malloc(*size);
+      fread(data,1,*size,f);
       return data;
 }
 

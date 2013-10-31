@@ -44,6 +44,8 @@ struct Ray
 
 ////////////////////////////////////////////////////////////
 
+void *d_volume;
+
 typedef struct octree_struct* octree;
 
 struct octree_struct{
@@ -51,59 +53,66 @@ struct octree_struct{
       octree child[8];
 };
 
-typedef struct {
-      void *ptr;
-      size_t size;
-      size_t curr_offset;
-} forgetful;
-
-__device__
-void *phalloc(forgetful *memory, size_t alloc){
-      void *tmp = memory->ptr + memory->curr_offset;
-      memory->curr_offset += alloc;
-      if(memory->curr_offset > memory->size){
-            //Houston we have a problem
-      }
-      return tmp;
-}
-
-__device__
-octree new_node(char fill, forgetful *memory){
-      octree t = (octree)phalloc(memory, sizeof(struct octree_struct));
-      t->fill = fill;
-      t->child[0] = 
-            t->child[1] = 
-            t->child[2] = 
-            t->child[3] = 
-            t->child[4] = 
-            t->child[5] = 
-            t->child[6] = 
-            t->child[7] = NULL;
-      return t; 
-}
-
-__device__
-void parse_root(octree *t, void *vol, forgetful *memory){
-      __shared__ static size_t offset;
-      for(unsigned int i=0;i<8;++i){
-            char fill = (char)*((char *)vol + ((offset++)*sizeof(char)));
-            (*t)->child[i] = new_node(fill, memory);
-            if(fill == 2) parse_root(&(*t)->child[i], vol, memory);
-      }
-}
-
 __global__
-void construct_octree(void *vol, void *mem, size_t memsize){
-      forgetful memory = { mem, memsize, 0 };
-      octree d_root = new_node(2, &memory);
-      parse_root(&d_root, vol, &memory);
-      
+void readdress_volume(void *vol, size_t size){
+      for(size_t i=0;i<size;i+=sizeof(struct octree_struct)){
+            octree t = (octree)((size_t)vol + i);
+            for(unsigned int i=0;i<8;++i){
+                  if(t->child[i] == NULL) continue;
+                  t->child[i] += (size_t)vol;
+            }
+      }
 }
 
-
+//No interpolation..... yet
 __device__
-float lookup_oc(void *data, float x, float y, float z){
+float octex3D(void *data, float x, float y, float z){
+      octree t = (octree)data;
+      //Find out what quadrant you are in
+      while(t->fill==2){
+            if(x < 0.5){
+                  if(y < 0.5){
+                        if(z < 0.5){
+                              //0
+                              t = (octree)((size_t)data + t->child[0]);
+                        }else{
+                              //1
+                              t = (octree)((size_t)data + t->child[1]);
+                        }
+                  }else{
+                        if(z < 0.5){
+                              //2
+                              t = (octree)((size_t)data + t->child[2]);
+                        }else{
+                              //3
+                              t = (octree)((size_t)data + t->child[3]);
+                        }
 
+                  }
+            }else{
+                  if(y < 0.5){
+                        if(z < 0.5){
+                              //4
+                              t = (octree)((size_t)data + t->child[4]);
+                        }else{
+                              //5
+                              t = (octree)((size_t)data + t->child[5]);
+                        }
+                  }else{
+                        if(z < 0.5){
+                              //6
+                              t = (octree)((size_t)data + t->child[6]);
+                        }else{
+                              //7
+                              t = (octree)((size_t)data + t->child[7]);
+                        }
+
+                  }
+            }
+
+       }
+      
+      return (((float)t->fill*150.0f)/255.0f);
 }
 
 
@@ -171,7 +180,7 @@ __device__ uint rgbaFloatToInt(float4 rgba)
 __global__ void
 d_render(uint *d_output, uint imageW, uint imageH,
          float density, float brightness,
-         float transferOffset, float transferScale)
+         float transferOffset, float transferScale, void *octex)
 {
     const int maxSteps = 500;
     const float tstep = 0.01f;
@@ -211,7 +220,7 @@ d_render(uint *d_output, uint imageW, uint imageH,
     {
         // read from 3D texture
         // remap position to [0, 1] coordinates
-        float sample = tex3D(tex, pos.x*0.5f+0.5f, pos.y*0.5f+0.5f, pos.z*0.5f+0.5f);
+        float sample = octex3D(octex, pos.x*0.5f+0.5f, pos.y*0.5f+0.5f, pos.z*0.5f+0.5f);
         //sample *= 64.0f;    // scale for 10-bit data
         // lookup in transfer function texture
         float4 col = tex1D(transferTex, (sample-transferOffset)*transferScale);
@@ -275,15 +284,14 @@ void initCuda(void *h_volume, cudaExtent volumeSize, size_t size)
     // bind array to 3D texture
     checkCudaErrors(cudaBindTextureToArray(tex, d_volumeArray, channelDesc));
     */
-    void *d_volume;
-    checkCudaErrors(cudaMalloc(&d_volume, size));
-    checkCudaErrors(cudaMemcpy(&d_volume, h_volume, size, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMalloc((void**)&d_volume, size));
+    checkCudaErrors(cudaMemcpy(d_volume, h_volume, size, cudaMemcpyHostToDevice));
 
-    void *d_mem;
-    size_t d_memsize = size*sizeof(struct octree_struct);
-    checkCudaErrors(cudaMalloc(&d_mem, d_memsize));
+    octree t = (octree)malloc(sizeof(struct octree_struct));
+    checkCudaErrors(cudaMemcpy((void*)t, d_volume, sizeof(struct octree_struct), cudaMemcpyDeviceToHost));
+    printf("Fill of root is: %hu\n", t->fill);
 
-    construct_octree<<<1,1>>>(d_volume, d_mem, d_memsize);
+    //readdress_volume<<<1,1>>>(d_volume, size);
 
     // create transfer function texture
     float4 transferFunc[] =
@@ -325,7 +333,7 @@ void render_kernel(dim3 gridSize, dim3 blockSize, uint *d_output, uint imageW, u
                    float density, float brightness, float transferOffset, float transferScale)
 {
     d_render<<<gridSize, blockSize>>>(d_output, imageW, imageH, density,
-                                      brightness, transferOffset, transferScale);
+                                      brightness, transferOffset, transferScale, d_volume);
 }
 
 extern "C"
