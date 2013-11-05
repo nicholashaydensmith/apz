@@ -7,10 +7,34 @@ Description:
 --------------------------------------------------------------------------------
 # Talk about the purpose of this module, why it was developed
 
+  Volume Rendering is an incredibly useful tool for any scientific field, but
+  specifically we focus on the astronomy community.  This module is designed
+  to provide real-time, interactive rendering of volumes.  Namely, this is a
+  module for Yt, and is designed to integrate with it.
+  
 
 Requirements:
 --------------------------------------------------------------------------------
-# Talk about the requirements for the module to work (CUDA/nVidia, OpenGL 4.x, RAM, etc) 
+# Talk about the requirements for the module to work (CUDA/nVidia, OpenGL 4.x, 
+# RAM, etc) 
+
+  - nVidia CUDA-compatible GPU with 1gb of memory
+    This volume renderer uses CUDA acceleration in order to calculate large
+    amounts of data in parallel on the GPU.  Therefore, a CUDA compatible
+    GPU is required in order to use it.
+    
+  - OpenGL 4.0 support (check your GPU)
+    For interactive rendering, OpenGL 4.x is required.  This is a cross-platform
+    rendering API which supports integration with CUDA.  
+    
+  - Yt 3.x or higher
+    Yt is a visualization tool for astrophysical data.
+    
+  - Unix-like operating system (Due to Yt)
+    In order for Yt to operate, you need linux.
+    
+  - 8 GB memory
+  
 
 
 Installation:
@@ -34,6 +58,7 @@ Troubleshooting:
 # There should be lots about VirtualGL, or not meeting requirements
 
 
+
 Technologies:
 --------------------------------------------------------------------------------
 # Here we can talk in detail about the technologies we used, their caveats, 
@@ -41,11 +66,30 @@ Technologies:
 
  CUDA 5.5:
  -- Description:
+    CUDA 5.5 is the latest version of nVidia's GPU acceleration suite.  It
+    allows for massively parallel processing, which ends up being highly
+    effective for volume rendering.
+    CUDA is employed for the ray-casting and filtering algorithms.
  -- Requirements:
+    A CUDA-compatible GPU is required for CUDA to work.  There does not exist
+    any software simulators of CUDA, and cannot be worked around.
+ -- Caveats:
+    It is not recommended to run the volume renderer on a CUDA-compatible GPU
+    which is also displaying to a screen.  If a cuda kernel takes too long, the
+    watchdog timer might trigger, causing the system kernel to restart the GPU.
+    For headless units, this is not the case, and may only occur on 'headed'
+    units when much larger data sets are employed.
  
  OpenGL 4.x:
  -- Description:
+    OpenGL is a rendering API developed by SGI.  It is universally understood
+    by all major operating systems, and compatible with all major graphics
+    drivers.  It is extremely low level, and is often faster than the use of 
+    rendering "engines".  
  -- Requirements:
+ 
+ -- Caveats:
+    
 
  VirtualGL:
  -- Description:
@@ -63,13 +107,27 @@ Technologies:
   
  Octree Format:
  -- Description:
+    This format is designed specifically for very high detail in specific parts
+    of the data.  More often than not this format will result in very rough 
+    regions where there exists little to no volume data.  However, the detail
+    in relevant regions will be greatly enhanced, without sacrificing memory
+    for the empty ones.
  -- Requirements:
  -- Caveats:
+    As stated above, there may be large regions, or "artifacts", where the
+    quality seems poor.  This can be alleviated by using some of the blending
+    filters in the functions listing.
  
  Grid Format:
  -- Description:
+    The grid format is great for general-purpose volume rendering.  Namely, 
+    where detail is somewhat uniform across the entire field.  Will often
+    create very beautiful images at the expense of memory and time.
  -- Requirements:
  -- Caveats:
+    Empty data regions still use as much memory as filled ones, and therefore
+    this format might use extremely large amounts of memory for fairly trivial
+    data.
 
  Yt 3.x:
  -- Description:
