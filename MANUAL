@@ -144,8 +144,10 @@ Technologies:
     data.
 
  Yt 3.x:
- -- Description:
- -- Requirements:
+--  Description:
+    YT is an open source python package for analysing and visualizing
+    volumetric data from astrophysical simulations.
+ -- Requirements: Linux or Mac (NOT WINDOWS)
  -- Invocation:
  -- Caveats:
  
