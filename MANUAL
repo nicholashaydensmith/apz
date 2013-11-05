@@ -39,14 +39,12 @@ Requirements:
 
 Installation:
 --------------------------------------------------------------------------------
-# Talk about how to set Yt up to use this module
-For an in-depth walkthrough of how to installthe old version of yt, see the documentation given by 
+The newest version, yt 3.0 can be found as a source code download at:
+https://bitbucket.org/yt_analysis/yt-3.0/src
+For an in-depth walkthrough of how to install yt, see the documentation given by 
 the devleopers at:
 http://yt-project.org/doc/orientation/installing.html
 
-The newest version, yt 3.0 can be found as a source code download at:
-https://bitbucket.org/yt_analysis/yt-3.0/src
-Installation details are given at the bottom of the page.
 
 Getting Started:
 --------------------------------------------------------------------------------
