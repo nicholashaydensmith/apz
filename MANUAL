@@ -40,12 +40,26 @@ Requirements:
 Installation:
 --------------------------------------------------------------------------------
 # Talk about how to set Yt up to use this module
+For an in-depth walkthrough of how to installthe old version of yt, see the documentation given by 
+the devleopers at:
+http://yt-project.org/doc/orientation/installing.html
 
+The newest version, yt 3.0 can be found as a source code download at:
+https://bitbucket.org/yt_analysis/yt-3.0/src
+Installation details are given at the bottom of the page.
 
 Getting Started:
 --------------------------------------------------------------------------------
 # Talk about what steps the user needs to do in order to show some sample
-
+yt comes with a dataset, DD0010/moving7_0010. As a brief explanation, this dataset 
+is an extremely low-resolution Enzo dataset, with two “spheres” that have begun collapsing. 
+It has several levels of refinement, but it’s also quite low resolution. 
+An explanation of how yt deals with data:
+http://yt-project.org/doc/orientation/how_yt_thinks.html
+Once you have data:
+http://yt-project.org/doc/orientation/first_steps.html
+How to make simple plots:
+http://yt-project.org/doc/cookbook/simple_plots.html
 
 Function Listing:
 --------------------------------------------------------------------------------
