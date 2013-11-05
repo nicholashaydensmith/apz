@@ -1,7 +1,92 @@
 ### DRAFT SO FAR ###
 
-VirtualGL
-OCTree format?
-Yt
-iPython
-Object Renderer
+# Reagan's Renderers
+# GPU accelerated real-time volume rendering module for Yt
+
+Description:
+--------------------------------------------------------------------------------
+# Talk about the purpose of this module, why it was developed
+
+
+Requirements:
+--------------------------------------------------------------------------------
+# Talk about the requirements for the module to work (CUDA/nVidia, OpenGL 4.x, RAM, etc) 
+
+
+Installation:
+--------------------------------------------------------------------------------
+# Talk about how to set Yt up to use this module
+
+
+Getting Started:
+--------------------------------------------------------------------------------
+# Talk about what steps the user needs to do in order to show some sample
+
+
+Function Listing:
+--------------------------------------------------------------------------------
+# Documentation for each of our functions
+
+
+Troubleshooting:
+--------------------------------------------------------------------------------
+# Talk about some of our problems, or problems the user might have 
+# There should be lots about VirtualGL, or not meeting requirements
+
+
+Technologies:
+--------------------------------------------------------------------------------
+# Here we can talk in detail about the technologies we used, their caveats, 
+# and how the user can manipulate them.  
+
+ CUDA 5.5:
+ -- Description:
+ -- Requirements:
+ 
+ OpenGL 4.x:
+ -- Description:
+ -- Requirements:
+
+ VirtualGL:
+ -- Description:
+    VirtualGL is a layer that works with the X windows system in order to stream 
+    OpenGL as a 'video', rather than as a series of X-commands.  It works by 
+    opening a 'backdoor' of sorts between the two machines, and hijacking the X
+    window system.  As a result, the bandwidth constraints of rendering boils 
+    down to a video streaming problem, rather than a data transfer problem 
+    (difficult for gigabytes of data).  
+  
+ -- Requirements:
+    VirtualGL requires any standard Unix-like or Windows machine.  
+  
+ -- Invocation:
+  
+ Octree Format:
+ -- Description:
+ -- Requirements:
+ -- Caveats:
+ 
+ Grid Format:
+ -- Description:
+ -- Requirements:
+ -- Caveats:
+
+ Yt 3.x:
+ -- Description:
+ -- Requirements:
+ -- Invocation:
+ -- Caveats:
+ 
+ IPython 3.x:
+ -- Description:
+ -- Requirements:
+ -- Caveats:
+ 
+
+ Object Renderer
+
+Acknowledgements:
+--------------------------------------------------------------------------------
+# Insert acknowledgements
+
+
