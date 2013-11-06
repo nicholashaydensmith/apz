@@ -1,11 +1,9 @@
-### DRAFT SO FAR ###
 
 # Reagan's Renderers
 # GPU accelerated real-time volume rendering module for Yt
 
 Description:
 --------------------------------------------------------------------------------
-# Talk about the purpose of this module, why it was developed
 
   Volume Rendering is an incredibly useful tool for any scientific field, but
   specifically we focus on the astronomy community.  This module is designed
@@ -15,8 +13,6 @@ Description:
 
 Requirements:
 --------------------------------------------------------------------------------
-# Talk about the requirements for the module to work (CUDA/nVidia, OpenGL 4.x, 
-# RAM, etc) 
 
   - nVidia CUDA-compatible GPU with 1gb of memory
     This volume renderer uses CUDA acceleration in order to calculate large
@@ -48,7 +44,7 @@ http://yt-project.org/doc/orientation/installing.html
 
 Getting Started:
 --------------------------------------------------------------------------------
-# Talk about what steps the user needs to do in order to show some sample
+
 yt comes with a dataset, DD0010/moving7_0010. As a brief explanation, this dataset 
 is an extremely low-resolution Enzo dataset, with two “spheres” that have begun collapsing. 
 It has several levels of refinement, but it’s also quite low resolution. 
@@ -58,6 +54,24 @@ Once you have data:
 http://yt-project.org/doc/orientation/first_steps.html
 How to make simple plots:
 http://yt-project.org/doc/cookbook/simple_plots.html
+
+Usage
+--------------------------------------------------------------------------------
+
+     - To create binary octree files use octree program and as input give it
+       a plain text file of parents and densities where parents are denoted by
+       the number 2, and leaf nodes are float densities all seperated by newline.
+          ./octree path/to/input
+          
+       Outputs "path/to/input.boc"
+
+     - To build and run the volume renderer using octrees (.boc)
+          make
+          ./volumeRender oc path/to/input.boc
+          
+       And standard 3D arrays (.raw)
+          make
+          ./volumeRender path/to/input.raw
 
 Function Listing:
 --------------------------------------------------------------------------------
@@ -73,8 +87,6 @@ Troubleshooting:
 
 Technologies:
 --------------------------------------------------------------------------------
-# Here we can talk in detail about the technologies we used, their caveats, 
-# and how the user can manipulate them.  
 
  CUDA 5.5:
  -- Description:
