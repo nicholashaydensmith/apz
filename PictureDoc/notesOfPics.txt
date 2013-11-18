@@ -1,0 +1,24 @@
+simpleOCtreeRenderOGL:
+First test of rendering OC tree data, this was done remotely using VirtualGL, the use could rotate the cube using the mouse and zoom in and out using the keyboard.
+
+complicatedOCtreeTestOGL:
+Using the same program as the simple OCtree render we attempted to render a more complicated dataset. This revealed that there is something wrong with the program or the data and that the visual presentation is not particularly pleasing.
+
+Techniques for Visualizing OCtrees:
+    simpleOCtreePhongShadingOGL -- we took the simple OpenGL example and refactored it into modern OpenGL. Moved all the data into a pixel buffer which allowed real time Phong shading. Phong shading looks much nicer than the simple render and provides more information to the viewer.
+
+    CUDAocTreeRender -- This is done using a simple ray-casting technique for volume rendering provided by the CUDA sample code. We had to adapt this code to do OCtree rendering. Using this technique we can do robust volume rendering due to the parallel nature of the graphics card. 
+    
+    maxIntensityProjectionOCtree -- http://en.wikipedia.org/wiki/Maximum_intensity_projection. We implemented a popular 3D imaging technique to see how it varied from the CUDA ray casting samples. Visually this reveals things differently from the other OCtree renders.
+    
+Debugging the data flow:
+    <Compare Conor and Nathan YT images with TestingGalaxyData> -- These images are rendered from the same data, ones using yt functions and some using our OCtree renderer. Clearly there is something wrong with the data because these images do not correspond very well and we are pretty sure we are doing volume rendering correctly.
+    
+    testOCtreeOrdering -- we use this figure to see if the ordering of the OCtree in the data file is what we expect it to be with respect to XYZ. However this does not guarantee the complete structure of the OCtree in the file.
+    
+    To test the complete structure of the file to see if we are reading it correctly we check the XYZ ordering of the data. We found we have the correct XYZ ordering which means that we're doing something wrong on another ordering which means the OCtree must be breadth first, depth first, or a combination of the two. To test that we needed a simple example <http://paste.yt-project.org/show/4056/ &&  ytSliceofSampleOCtree>
+    
+    YTexampleDataVolumeRenderTest -- These images reveal there is a mismatch. We attempted to read the OCtree breadth first which is the wrong solution. 
+    
+Volume Rendering Uniformally Spaced Grids:
+    
